@@ -650,6 +650,7 @@ class WMSectionSlider {
     const settings = window[nameSpace].settings;
 
     pluginEls.forEach(el => {
+      if (el.closest('section.wm-section-slider')) return;
       const sliderEl = buildPlugin(el, settings);
       el.wmSectionSlider = new WMSectionSlider(sliderEl, settings);
       window[nameSpace].items.push(sliderEl);
