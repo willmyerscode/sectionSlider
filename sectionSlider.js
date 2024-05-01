@@ -1,3 +1,7 @@
+/**
+* Section Slider Plugin for Squarespace
+* Copyright Will-Myers.com
+**/
 class WMSectionSlider {
   static emitEvent(type, detail = {}, elem = document) {
     // Make sure there's an event type
@@ -196,7 +200,7 @@ class WMSectionSlider {
       },
       loop: parseAttributeValue(data.loop) || true,
       rewind: parseAttributeValue(data.rewind) || false,
-      autoplay: getAutoplaySettings(data),
+      autoplay: getAutoplaySettings(data, this.settings),
       autoHeight: true,
       crossFade: false,
       coverflowEffect: getCoverflowEffect(data, this.settings),
@@ -253,14 +257,14 @@ class WMSectionSlider {
         slideShadows: settings.coverflow?.slideShadows ?? true
       };
     } 
-    function getAutoplaySettings(data) {
+    function getAutoplaySettings(data, settings) {
       const timer = parseAttributeValue(data.autoplayTimer);
       if (!timer) {
         return false;
       }
       return {
         delay: timer,
-        disableOnInteraction: parseAttributeValue(data.autoplayDisableOnInteraction) || this.settings.autoplayDisableOnInteraction || false,
+        disableOnInteraction: parseAttributeValue(data.autoplayDisableOnInteraction) || settings.autoplayDisableOnInteraction || false,
       };
     }
   }
