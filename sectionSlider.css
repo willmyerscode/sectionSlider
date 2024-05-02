@@ -1,3 +1,8 @@
+/**
+* Section Slider Plugin
+* Copyright Will-Myers.com (until Swiper CSS)
+**/
+
 .wm-section-slider {
   --swiper-pagination-color: var(--list-section-carousel-arrow-color);
   --swiper-pagination-left: auto;
@@ -17,32 +22,36 @@
 .wm-section-slider .swiper-pagination {
   pointer-events: none;
 }
-.wm-section-slider .swiper-pagination span{
-  pointer-events: auto;
-}
 .wm-section-slider .swiper-pagination span.swiper-pagination-bullet {
-  --swiper-pagination-bullet-horizontal-gap: var(--bullet-spacing, 4px);
-  --swiper-pagination-bullet-inactive-color: var(--bullet-color, var(--list-section-carousel-arrow-color, white));
-  width: var(--bullet-size, 12px);
-  height: var(--bullet-size, 12px);
-  background-color: var(--bullet-color-inactive, var(--bullet-color, currentColor));
-  opacity: var(--bullet-opacity-inactive, 0.4);
-}
-.wm-section-slider .swiper-pagination span.swiper-pagination-bullet-active {
-  background-color: var(--bullet-color, var(--list-section-carousel-arrow-background-color));
-  opacity: 1;
-}
-
-.wm-section-slider .numbered-bullet {
   display: inline-grid;
   place-items: center;
   aspect-ratio: 1;
-  font-size: var(--bullet-font-size, 0px);
   line-height: 0;
+  width: var(--bullet-size, 12px);
+  height: var(--bullet-size, 12px);
+  background-color: var(--bullet-color-inactive, 
+                        var(--bullet-color, 
+                            var(--list-section-carousel-arrow-background-color)));
+  opacity: var(--bullet-opacity-inactive, 0.4);
   padding: var(--bullet-padding, 0px);
-  color: var(--bullet-text-color, var(--list-section-carousel-arrow-color));
+  pointer-events: auto;
+}
+.wm-section-slider .swiper-pagination span.swiper-pagination-bullet-active {
+  background-color: var(--bullet-color, 
+                        var(--list-section-carousel-arrow-background-color));
+  opacity: 1;
 }
 
+/*Numbered Bullets*/
+.wm-section-slider span.numbered-bullet {
+  font-size: var(--bullet-font-size, 0px);
+  color: var(--bullet-text-color-inactive, 
+             var(--list-section-carousel-arrow-color));
+}
+.wm-section-slider span.numbered-bullet.swiper-pagination-bullet-active {
+  color: var(--bullet-text-color, 
+             var(--list-section-carousel-arrow-color));
+}
 
 /*Navigation Buttons*/
 .wm-section-slider .navigation-wrapper {
