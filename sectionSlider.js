@@ -2,6 +2,8 @@
 * Section Slider Plugin for Squarespace
 * Copyright Will-Myers.com
 **/
+
+
 class WMSectionSlider {
   static emitEvent(type, detail = {}, elem = document) {
     // Make sure there's an event type
@@ -34,7 +36,8 @@ class WMSectionSlider {
     this.addDOMContentLoadedEventListener();
     this.addSlideChangeEventListener();
     this.addAfterInitEventListener();
-    this.addFuncHeaderColorThemeMatch()
+    this.addFuncHeaderColorThemeMatch();
+    this.addFuncSliderColorThemeMatch()
   }
   addResizeEventListener() {
     const handleResize = () => {
@@ -180,12 +183,22 @@ class WMSectionSlider {
   }
   addFuncHeaderColorThemeMatch() {
     const isFirstSection = this.el.matches('#sections > *:first-child');
-    const isFixedHeader = window.Static?.SQUARESPACE_CONTEXT?.tweakJSON['tweak-fixed-header'];
+    const isFixedHeader = window.Static?.SQUARESPACE_CONTEXT?.tweakJSON['tweak-fixed-header'] === 'true';
+
     if (isFirstSection && this.settings.headerColorThemeMatch && !isFixedHeader) {
+      console.log('should change')
       this.swiper.on("activeIndexChange", () => {
         const colorTheme = this.activeSection.dataset.sectionTheme;
         const header = document.getElementById('header');
         header.dataset.sectionTheme = colorTheme;
+      });
+    }
+  }
+  addFuncSliderColorThemeMatch() {
+    if (this.settings.colorThemeMatch) {
+      this.swiper.on("activeIndexChange", () => {
+        const colorTheme = this.activeSection.dataset.sectionTheme;
+        this.swiper.el.dataset.sectionTheme = colorTheme;
       });
     }
   }
@@ -267,6 +280,13 @@ class WMSectionSlider {
         disableOnInteraction: parseAttributeValue(data.autoplayDisableOnInteraction) || settings.autoplayDisableOnInteraction || false,
       };
     }
+  }
+  _parseAttributeValue(value) {
+    if (value === "true") return true;
+    if (value === "false") return false;
+    const number = parseFloat(value);
+    if (!isNaN(number) && number.toString() === value) return number;
+    return value;
   }
 }
 
@@ -588,10 +608,12 @@ class WMSectionSlider {
       ? Utilities.parseAttributeValue(el.dataset.static)
       : false;
     const id = el.id;
+    const colorTheme = initialSection.dataset.sectionTheme;
     
     initialSection.insertAdjacentHTML(
       "beforebegin",
       `<section 
+          data-section-theme="${colorTheme}"
           class="swiper page-section wm-section-slider"${id ? ` id="${id}"` : ``}>
         <div class="swiper-wrapper">
         </div>
@@ -648,6 +670,7 @@ class WMSectionSlider {
     let pluginEls = document.querySelectorAll('[data-wm-plugin="section-slider"]:not([data-loading-state])');
     if (!pluginEls.length) return;
     const settings = window[nameSpace].settings;
+    ScriptLoader.duplicateRootCssRule();
 
     pluginEls.forEach(el => {
       if (el.closest('section.wm-section-slider')) return;
@@ -663,6 +686,7 @@ class WMSectionSlider {
   const defaultSettings = {
     pauseInactiveBackgroundVideos: true,
     headerColorThemeMatch: true,
+    colorThemeMatch: false,
     autoplayDisableOnInteraction: false,
     prevIcon: `<svg class="user-items-list-carousel__arrow-icon" viewBox="0 0 44 18" xmlns="http://www.w3.org/2000/svg">
         <path class="user-items-list-carousel__arrow-icon-foreground user-items-list-carousel__arrow-icon-path" d="M9.90649 16.96L2.1221 9.17556L9.9065 1.39116"></path>
