@@ -1,5 +1,5 @@
 /**
-* Section Slider Plugin
+* Section Slider Plugin 
 * Copyright Will-Myers.com (until Swiper CSS)
 **/
 
@@ -35,6 +35,7 @@
   opacity: var(--bullet-opacity-inactive, 0.4);
   padding: var(--bullet-padding, 0px);
   pointer-events: auto;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 .wm-section-slider .swiper-pagination span.swiper-pagination-bullet-active {
   background-color: var(--bullet-color, 
@@ -52,6 +53,7 @@
   color: var(--bullet-text-color, 
              var(--list-section-carousel-arrow-color));
 }
+
 
 /*Navigation Buttons*/
 .wm-section-slider .navigation-wrapper {
@@ -110,6 +112,7 @@
   stroke: var(--arrow-color, var(--list-section-carousel-arrow-color));
   height: var(--arrow-size, 36px);
   width: var(--arrow-size, 36px);
+  transition: stroke 0.3s ease;
 }
 .swiper-button-background {
   position: relative;
@@ -118,6 +121,7 @@
   background: var(--arrow-background-color, var(--list-section-carousel-arrow-background-color));
   height: var(--arrow-background-size, 60px);
   width: var(--arrow-background-size, 60px);
+  transition: background-color 0.3s ease;
 }
 @media(max-width: 767px) {
   .wm-section-slider {
@@ -132,6 +136,11 @@
 }
 #sections > .wm-section-slider:first-child .page-section {
   padding-top: var(--header-height) !important;
+}
+
+/*If Swiper is NOT first Section*/
+#sections > .wm-section-slider:not(:first-child) .swiper-slide > section.page-section {
+  padding-top: 0px !important;
 }
 
 /*Static Background & Content*/
