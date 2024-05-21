@@ -3,7 +3,6 @@
 * Copyright Will-Myers.com
 **/
 
-
 class WMSectionSlider {
   static emitEvent(type, detail = {}, elem = document) {
     // Make sure there's an event type
@@ -214,7 +213,7 @@ class WMSectionSlider {
       loop: parseAttributeValue(data.loop) || true,
       rewind: parseAttributeValue(data.rewind) || false,
       autoplay: getAutoplaySettings(data, this.settings),
-      autoHeight: true,
+      autoHeight: data.fixedHeight ? !parseAttributeValue(data.fixedHeight) : true,
       crossFade: false,
       coverflowEffect: getCoverflowEffect(data, this.settings),
       effect: parseAttributeValue(data.effect) || 'slide',
@@ -240,6 +239,7 @@ class WMSectionSlider {
         }
       }
     });
+
     function getPaginationSettings(data, settings) {
       const render = (index, className) => {
         return '<span class="numbered-bullet ' + className + '">' + (index + 1) + "</span>";
