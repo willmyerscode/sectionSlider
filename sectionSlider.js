@@ -126,7 +126,6 @@ class WMSectionSlider {
 
     // On slide changes
     this.swiper.on('slideChange', () => {
-      console.log('slideChange')
       if (!allowEvent) return;
       const activeSlide = this.swiper.slides[this.swiper.activeIndex]
       pauseAllVideos(container);
