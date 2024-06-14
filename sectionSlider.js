@@ -127,10 +127,17 @@ class WMSectionSlider {
     // On slide changes
     this.swiper.on('slideChange', () => {
       if (!allowEvent) return;
-      const activeSlide = this.swiper.slides[this.swiper.activeIndex]
-      pauseAllVideos(container);
-      const activeVideo = activeSlide.querySelector('.sqs-video-background-native video, .section-border iframe[src*="vimeo.com"]');
-      if (activeVideo) playVideo(activeVideo);
+      this.swiper.slides.forEach((slide, index) => {
+        const video = slide.querySelector('.sqs-video-background-native video');
+        if (video) {
+          if (index === this.swiper.activeIndex) {
+            video.play();
+          } else {
+            video.pause();
+            video.currentTime = 0;
+          }
+        }
+      });
     });
     
     const observer = new MutationObserver((mutationsList, observer) => {
@@ -306,7 +313,6 @@ class WMSectionSlider {
     return value;
   }
 }
-
 
 (function() {
   class Utilities {
