@@ -47,8 +47,11 @@ class WMSectionSlider {
   addDOMContentLoadedEventListener() {}
   addLoadEventListener() {}
   addAfterInitEventListener() {
-    if (this.settings.pauseInactiveBackgroundVideos)  {
+    if (this.settings.pauseInactiveBackgroundVideos && !this.settings.restartBackgroundVideos)  {
       this.addFuncPauseInactiveBackgroundVideos()
+    }
+    if (this.settings.restartBackgroundVideos) {
+      this.addFuncRestartBackgroundVideos();
     }
     // this.addFuncInitSectionDividers(); <-- Still working on this
     this.addFuncRandomizeSlides();
@@ -123,6 +126,7 @@ class WMSectionSlider {
 
     // On slide changes
     this.swiper.on('slideChange', () => {
+      console.log('slideChange')
       if (!allowEvent) return;
       const activeSlide = this.swiper.slides[this.swiper.activeIndex]
       pauseAllVideos(container);
@@ -152,6 +156,21 @@ class WMSectionSlider {
     });
 
     observer.observe(container, { childList: true, subtree: true });
+  }
+  addFuncRestartBackgroundVideos() {
+    this.swiper.on('slideChange', () => {
+      this.swiper.slides.forEach((slide, index) => {
+        const video = slide.querySelector('.sqs-video-background-native video');
+        if (video) {
+          if (index === this.swiper.activeIndex) {
+            video.play();
+          } else {
+            video.pause();
+            video.currentTime = 0;
+          }
+        }
+      });
+    });
   }
   addFuncInitSectionDividers() {
     const hasSectionDividerBefore = this.el.previousElementSibling.matches('.has-section-divider');
@@ -185,7 +204,6 @@ class WMSectionSlider {
     const isFixedHeader = window.Static?.SQUARESPACE_CONTEXT?.tweakJSON['tweak-fixed-header'] === 'true';
 
     if (isFirstSection && this.settings.headerColorThemeMatch && !isFixedHeader) {
-      console.log('should change')
       this.swiper.on("activeIndexChange", () => {
         const colorTheme = this.activeSection.dataset.sectionTheme;
         const header = document.getElementById('header');
@@ -685,6 +703,7 @@ class WMSectionSlider {
   const nameSpace = 'wmSectionSlider'
   const defaultSettings = {
     pauseInactiveBackgroundVideos: true,
+    restartBackgroundVideos: false,
     headerColorThemeMatch: true,
     colorThemeMatch: false,
     autoplayDisableOnInteraction: false,
