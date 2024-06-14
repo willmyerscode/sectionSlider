@@ -47,13 +47,11 @@ class WMSectionSlider {
   addDOMContentLoadedEventListener() {}
   addLoadEventListener() {}
   addAfterInitEventListener() {
-    if (this.settings.pauseInactiveBackgroundVideos && !this.settings.restartBackgroundVideos)  {
-      this.addFuncPauseInactiveBackgroundVideos()
-    }
     if (this.settings.restartBackgroundVideos) {
       this.addFuncRestartBackgroundVideos();
+    } else if (this.settings.pauseInactiveBackgroundVideos) {
+      this.addFuncPauseInactiveBackgroundVideos()
     }
-    // this.addFuncInitSectionDividers(); <-- Still working on this
     this.addFuncRandomizeSlides();
   }
   addSlideChangeEventListener() {
