@@ -52,6 +52,8 @@ class WMSectionSlider {
     } else if (this.settings.pauseInactiveBackgroundVideos) {
       this.addFuncPauseInactiveBackgroundVideos()
     }
+
+    // this.addFuncInitSectionDividers(); <-- Still working on this
     this.addFuncRandomizeSlides();
   }
   addSlideChangeEventListener() {
@@ -232,7 +234,7 @@ class WMSectionSlider {
         nextEl: ".navigation-button-next",
         prevEl: ".navigation-button-prev",
       },
-      loop: parseAttributeValue(data.loop) || true,
+      loop: data.loop ? parseAttributeValue(data.loop) : true,
       rewind: parseAttributeValue(data.rewind) || false,
       autoplay: getAutoplaySettings(data, this.settings),
       autoHeight: data.fixedHeight ? !parseAttributeValue(data.fixedHeight) : true,
@@ -294,11 +296,15 @@ class WMSectionSlider {
     } 
     function getAutoplaySettings(data, settings) {
       const timer = parseAttributeValue(data.autoplayTimer);
+      const loop = data.loop ? parseAttributeValue(data.loop) : true;
+      const stopOnLastSlide = loop ? false : true;
       if (!timer) {
         return false;
       }
+      
       return {
         delay: timer,
+        stopOnLastSlide: stopOnLastSlide,
         disableOnInteraction: parseAttributeValue(data.autoplayDisableOnInteraction) || settings.autoplayDisableOnInteraction || false,
       };
     }
