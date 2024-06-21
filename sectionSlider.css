@@ -1,6 +1,6 @@
 /**
-* Section Slider Plugin 
-* Copyright Will-Myers.com (until Swiper CSS)
+* Section Slider Plugin - TESTING
+* Copyright Will-Myers.com
 **/
 
 .wm-section-slider {
@@ -16,6 +16,10 @@
   --swiper-pagination-bullet-opacity: 1;
   --swiper-pagination-bullet-horizontal-gap: 4px;
   --swiper-pagination-bullet-vertical-gap: 6px;
+}
+
+.wm-section-slider {
+  background-color: var(--siteBackgroundColor);
 }
 
 /*Pagination Styles*/
@@ -145,7 +149,7 @@
 
 /*Static Background & Content*/
 .wm-section-slider[data-static] .static-slide{
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
   width: 100%;
@@ -162,9 +166,15 @@
   pointer-events: auto;
 }
 .wm-section-slider[data-static="content"] .swiper-wrapper {
+  position: absolute;
+  top:0;
+  height:100% !important;
   z-index: 1
 }
-
+.wm-section-slider[data-static="content"] .swiper-wrapper .swiper-slide,
+.wm-section-slider[data-static="content"] .swiper-wrapper .swiper-slide > .page-section {
+  height:100%;
+}
 .wm-section-slider[data-static="content"] .swiper-slide .content-wrapper{
   display: none;
 }
