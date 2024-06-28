@@ -164,12 +164,25 @@ class WMSectionSlider {
     observer.observe(container, { childList: true, subtree: true });
   }
   addFuncRestartBackgroundVideos() {
-    this.swiper.on('slideChange', () => {
+    this.swiper.on('realIndexChange', () => {
       this.swiper.slides.forEach((slide, index) => {
         const video = slide.querySelector('.sqs-video-background-native video');
         if (video) {
           if (index === this.swiper.activeIndex) {
+            video.currentTime = 0;
             video.play();
+          } else {
+            
+          }
+        }
+      });
+    });
+    this.swiper.on('transitionEnd', () => {
+      this.swiper.slides.forEach((slide, index) => {
+        const video = slide.querySelector('.sqs-video-background-native video');
+        if (video) {
+          if (index === this.swiper.activeIndex) {
+
           } else {
             video.pause();
             video.currentTime = 0;
