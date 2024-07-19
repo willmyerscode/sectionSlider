@@ -2,7 +2,6 @@
 * Section Slider Plugin for Squarespace
 * Copyright Will-Myers.com
 **/
-
 class WMSectionSlider {
   static emitEvent(type, detail = {}, elem = document) {
     // Make sure there's an event type
@@ -77,6 +76,7 @@ class WMSectionSlider {
     let allowEvent = false;
     const container = this.el;
     const pauseVideo = async (video) => {
+
       if (video.wmVimeoVideo && !video.isPaused) {
         await video.wmVimeoVideo.pause();
         video.isPaused = true;
@@ -125,7 +125,7 @@ class WMSectionSlider {
 
 
     // On slide changes
-    this.swiper.on('slideChange', () => {
+    this.swiper.on('realIndexChange', () => {
       if (!allowEvent) return;
       this.swiper.slides.forEach((slide, index) => {
         const video = slide.querySelector('.sqs-video-background-native video');
@@ -172,6 +172,7 @@ class WMSectionSlider {
             video.currentTime = 0;
             video.play();
           } else {
+
             
           }
         }
