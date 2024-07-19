@@ -134,7 +134,6 @@ class WMSectionSlider {
             video.play();
           } else {
             video.pause();
-            video.currentTime = 0;
           }
         }
       });
