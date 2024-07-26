@@ -149,11 +149,13 @@
 
 /*Static Background & Content*/
 .wm-section-slider[data-static] .static-slide{
-  position: relative;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+}
+.wm-section-slider[data-static="content"] .static-slide{
+  position: relative;
 }
 .wm-section-slider[data-static="content"] .static-slide.page-section .section-border{
   display: none;
@@ -179,7 +181,9 @@
   display: none;
 }
 
-
+.wm-section-slider[data-static="background"] .static-slide{
+  position: absolute;
+}
 .wm-section-slider[data-static="background"] .static-slide.page-section .content-wrapper{
   display: none;
 }
