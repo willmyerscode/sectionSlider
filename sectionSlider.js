@@ -52,7 +52,6 @@ class WMSectionSlider {
       this.addFuncPauseInactiveBackgroundVideos()
     }
 
-    // this.addFuncInitSectionDividers(); <-- Still working on this
     this.addFuncRandomizeSlides();
   }
   addSlideChangeEventListener() {
@@ -72,97 +71,65 @@ class WMSectionSlider {
     }
   }
   addFuncPauseInactiveBackgroundVideos() {
-    // necessary utility functions
-    let allowEvent = false;
     const container = this.el;
-    const pauseVideo = async (video) => {
-
-      if (video.wmVimeoVideo && !video.isPaused) {
-        await video.wmVimeoVideo.pause();
-        video.isPaused = true;
-        return;
-      }
-      if (video.readyState >= 2) {
-        video.pause();
-      } else {
-        video.addEventListener('canplay', () => {
-          video.pause();
-        });
-      }
-    };
+    let debounceTimer;
+  
     const playVideo = async (video) => {
-      if (video.wmVimeoVideo && video.isPaused) {
-        //console.log(video.wmVimeoVideo.readyState)
-        await video.wmVimeoVideo.play();
-        video.isPaused = false;
-        return;
+      try {
+        await video.play();
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          console.error('Error playing video:', error);
+        }
       }
-      if (video.readyState >= 2) {
-        video.play();
-      } else {
-        video.addEventListener('canplay', () => {
-          video.play();
-        });
-      }
-    }
-    const pauseAllVideos = (container) => {
-      const videos = container.querySelectorAll('.section-border .sqs-video-background-native video, .section-border iframe[src*="vimeo.com"]');
-      videos.forEach(pauseVideo);
     };
-    const addVimeoAPI = () => {
-      const script = document.createElement('script');
-      script.src = "https://player.vimeo.com/api/player.js";
-      document.head.prepend(script);
-      script.onload = () => {
-        const videos = container.querySelectorAll('.section-border iframe[src*="vimeo.com"]');
-        videos.forEach(video => {
-          video.wmVimeoVideo = new Vimeo.Player(video)
-          video.isPaused = true;
-        })
-        allowEvent = true;
-      }
-    }
-
-
-    // On slide changes
-    this.swiper.on('realIndexChange', () => {
-      if (!allowEvent) return;
-      this.swiper.slides.forEach((slide, index) => {
-        const video = slide.querySelector('.sqs-video-background-native video');
-        if (video) {
-          if (index === this.swiper.activeIndex) {
-            video.play();
-          } else {
-            video.pause();
+  
+    const updateVideos = async () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(async () => {
+        const slides = this.swiper.slides;
+        const activeIndex = this.swiper.activeIndex;
+  
+        for (let i = 0; i < slides.length; i++) {
+          const video = slides[i].querySelector('.sqs-video-background-native video');
+          if (video) {
+            if (i === activeIndex) {
+              await playVideo(video);
+            } else {
+              video.pause();
+            }
+          }
+        }
+      }, 50); 
+    };
+  
+    this.swiper.on('realIndexChange', updateVideos);
+  
+    const observeVideoAddition = (controller) => {
+      const observer = new MutationObserver(async (mutationsList) => {
+        for (const mutation of mutationsList) {
+          if (mutation.type === 'childList') {
+            const addedVideo = mutation.addedNodes[0];
+            if (addedVideo && addedVideo.matches('.sqs-video-background-native video')) {
+              updateVideos();
+              observer.disconnect();
+              break;
+            }
           }
         }
       });
-    });
-    
-    const observer = new MutationObserver((mutationsList, observer) => {
-      for(let mutation of mutationsList) {
-        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-          for (const node of mutation.addedNodes) {
-            if (node.nodeType === 1 && node.matches('.sqs-video-background-native video')) {
-              allowEvent = true;
-              pauseAllVideos(container); 
-              playVideo(container.querySelector('.swiper-slide-active .sqs-video-background-native video'));
-              observer.disconnect(); // Disconnect after pausing videos
-              return; // Exit the observer callback
-            }
-            if (node.nodeType === 1 && container.querySelector('iframe[src*="vimeo.com"]')) {
-              addVimeoAPI();
-              observer.disconnect(); // Disconnect after pausing videos
-              return; // Exit the observer callback
-            }
-          }
-        }
-      }
-    });
-
-    observer.observe(container, { childList: true, subtree: true });
+  
+      observer.observe(controller, { childList: true, subtree: true });
+    };
+  
+    const videoControllers = container.querySelectorAll('.section-border [data-controller="VideoBackgroundNative"]');
+    videoControllers.forEach(observeVideoAddition);
+  
+    // Initial video state setup
+    updateVideos();
   }
-  addFuncRestartBackgroundVideos() {
+  addFuncRestartBackgroundVideos() {    
+    
     this.swiper.on('realIndexChange', () => {
       this.swiper.slides.forEach((slide, index) => {
         const video = slide.querySelector('.sqs-video-background-native video');
@@ -190,26 +157,6 @@ class WMSectionSlider {
         }
       });
     });
-  }
-  addFuncInitSectionDividers() {
-    const hasSectionDividerBefore = this.el.previousElementSibling.matches('.has-section-divider');
-    const lastSlide = this.swiper.slides[this.swiper.slides.length - 1]
-    const hasSectionDividerAfter = lastSlide.querySelector('.has-section-divider');
-
-    if (hasSectionDividerBefore) {
-      const firstSlide = this.el.querySelector('.page-section');
-      const id = firstSlide.dataset.sectionId
-      this.el.dataset.sectionId = id;
-      this.el.dataset.hasPrevSectionDivider = 'true'
-    }
-    if (hasSectionDividerAfter) {
-      const divider = lastSlide.querySelector('.section-divider-display').cloneNode(true);
-      const border = lastSlide.querySelector('.section-border').cloneNode(true);
-      this.el.classList.add('has-section-divider');
-      this.el.append(divider)
-      this.el.prepend(border)
-      this.el.dataset.hasAfterSectionDivider = 'true'
-    }
   }
   addFuncRandomizeSlides() {
     if (!this.initEl.dataset.randomize) return;
