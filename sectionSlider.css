@@ -1,5 +1,5 @@
 /**
-* Section Slider Plugin - TESTING
+* Section Slider Plugin
 * Copyright Will-Myers.com
 **/
 
@@ -204,6 +204,11 @@
 /** With Section Divider Above **/
 .wm-section-slider[data-has-prev-section-divider] {
   top: calc(-1* var(--previous-section-divider-offset));
+}
+
+/* If in Section Loader */
+.wm-load-container .swiper-slide > section.page-section {
+  padding-top: 0px !important;
 }
 
 /*Edit Mode*/
