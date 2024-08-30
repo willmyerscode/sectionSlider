@@ -604,17 +604,31 @@ class WMSectionSlider {
           class="swiper page-section wm-section-slider"${id ? ` id="${id}"` : ``}>
         <div class="swiper-wrapper">
         </div>
-        ${pagination ? `<div class="swiper-pagination"></div>` : ``}
-        ${navigation ? `<div class="navigation-wrapper">
+        ${pagination && (navigation !== 'inline') ? `<div class="swiper-pagination"></div>` : ``}
+        ${navigation && (navigation !== 'inline') ? `<div class="navigation-wrapper">
           <div class="navigation-button-prev">
-            
             <button>
               <div class="swiper-button-background"></div>
               ${settings.prevIcon}
             </button>
           </div>
           <div class="navigation-button-next">
-            
+            <button>
+              <div class="swiper-button-background"></div>
+              ${settings.nextIcon}
+            </button>
+          </div>
+        </div>` : ``
+        }
+        ${navigation === 'inline' && pagination === 'inline' ? `<div class="inline-navigation-wrapper">
+          <div class="navigation-button-prev">
+            <button>
+              <div class="swiper-button-background"></div>
+              ${settings.prevIcon}
+            </button>
+          </div>
+          <div class="swiper-pagination"></div>
+          <div class="navigation-button-next">
             <button>
               <div class="swiper-button-background"></div>
               ${settings.nextIcon}
