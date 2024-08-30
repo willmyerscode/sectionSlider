@@ -16,6 +16,11 @@
   --swiper-pagination-bullet-opacity: 1;
   --swiper-pagination-bullet-horizontal-gap: 4px;
   --swiper-pagination-bullet-vertical-gap: 6px;
+
+  --swiper-inline-nav-justify-content: center;
+  --swiper-inline-nav-gap: 8px;
+  --swiper-inline-nav-offset: 17px;
+
 }
 
 .wm-section-slider {
@@ -132,6 +137,25 @@
     --arrow-size: 20px;
     --arrow-background-size: 40px;
   }
+}
+
+/*Inline Navigation*/
+.wm-section-slider .inline-navigation-wrapper{
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: var(--swiper-inline-nav-justify-content);
+  padding-bottom: var(--swiper-inline-nav-offset);
+  gap: var(--swiper-inline-nav-gap);
+}
+.wm-section-slider .inline-navigation-wrapper .swiper-pagination.swiper-pagination-horizontal {
+  position: relative;
+  width: auto;
+  line-height:0px;
+  bottom: 0px;
+  top: 0px;
 }
 
 /*If Swiper is first Section*/
