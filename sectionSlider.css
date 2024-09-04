@@ -99,7 +99,7 @@
     padding: 4vw var(--sqs-mobile-site-gutter, 6vw);
   }
 }
-.wm-section-slider[data-header-transparent="false"] .navigation-wrapper {
+#sections > .wm-section-slider[data-header-transparent="false"]:first-child .navigation-wrapper {
   padding-top: calc(4vw + var(--header-height));
 }
 
