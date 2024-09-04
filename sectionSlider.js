@@ -596,11 +596,13 @@ class WMSectionSlider {
       : false;
     const id = el.id;
     const colorTheme = initialSection.dataset.sectionTheme;
+    const tweaks = window.Static?.SQUARESPACE_CONTEXT?.tweakJSON;
     
     initialSection.insertAdjacentHTML(
       "beforebegin",
       `<section 
           data-section-theme="${colorTheme}"
+          data-header-transparent="${tweaks && tweaks['tweak-transparent-header']}"
           class="swiper page-section wm-section-slider"${id ? ` id="${id}"` : ``}>
         <div class="swiper-wrapper">
         </div>
