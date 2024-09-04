@@ -99,6 +99,9 @@
     padding: 4vw var(--sqs-mobile-site-gutter, 6vw);
   }
 }
+.wm-section-slider[data-header-transparent="false"] .navigation-wrapper {
+  padding-top: calc(4vw + var(--header-height));
+}
 
 .navigation-button-next > *,
 .navigation-button-prev > * {
