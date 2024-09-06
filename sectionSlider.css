@@ -238,6 +238,11 @@
   padding-top: 0px !important;
 }
 
+/*Safari Background Overlay fix*/
+.wm-section-slider .section-background .section-background-overlay {
+  transform: translateZ(0);
+}
+
 /*Edit Mode*/
 body.sqs-edit-mode-active
   .sqs-block-code:has([data-wm-plugin="section-slider"]) {
