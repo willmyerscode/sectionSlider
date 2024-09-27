@@ -173,7 +173,9 @@ class WMSectionSlider {
       this.swiper.on("activeIndexChange", () => {
         const colorTheme = this.activeSection.dataset.sectionTheme;
         const header = document.getElementById('header');
-        header.dataset.sectionTheme = colorTheme;
+        if (header) {
+          header.dataset.sectionTheme = colorTheme;
+        }
       });
     }
   }
