@@ -1,7 +1,7 @@
 /**
-* Section Slider Plugin for Squarespace
-* Copyright Will-Myers.com
-**/
+ * Section Slider Plugin for Squarespace
+ * Copyright Will-Myers.com
+ **/
 class WMSectionSlider {
   static emitEvent(type, detail = {}, elem = document) {
     // Make sure there's an event type
@@ -35,7 +35,7 @@ class WMSectionSlider {
     this.addSlideChangeEventListener();
     this.addAfterInitEventListener();
     this.addFuncHeaderColorThemeMatch();
-    this.addFuncSliderColorThemeMatch()
+    this.addFuncSliderColorThemeMatch();
   }
   addResizeEventListener() {
     const handleResize = () => {
@@ -49,14 +49,17 @@ class WMSectionSlider {
     if (this.settings.restartBackgroundVideos) {
       this.addFuncRestartBackgroundVideos();
     } else if (this.settings.pauseInactiveBackgroundVideos) {
-      this.addFuncPauseInactiveBackgroundVideos()
+      this.addFuncPauseInactiveBackgroundVideos();
     }
 
     this.addFuncRandomizeSlides();
   }
   addSlideChangeEventListener() {
     this.swiper.on("activeIndexChange", () => {
-      this.activeSection = this.swiper.slides[this.swiper.activeIndex].querySelector(".page-section");
+      this.activeSection =
+        this.swiper.slides[this.swiper.activeIndex].querySelector(
+          ".page-section"
+        );
       WMSectionSlider.emitEvent("wmSectionSlider:slideChange", {
         container: this.el,
         activeSection: this.activeSection,
@@ -73,25 +76,27 @@ class WMSectionSlider {
   addFuncPauseInactiveBackgroundVideos() {
     const container = this.el;
     let debounceTimer;
-  
-    const playVideo = async (video) => {
+
+    const playVideo = async video => {
       try {
         await video.play();
       } catch (error) {
-        if (error.name !== 'AbortError') {
-          console.error('Error playing video:', error);
+        if (error.name !== "AbortError") {
+          console.error("Error playing video:", error);
         }
       }
     };
-  
+
     const updateVideos = async () => {
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(async () => {
         const slides = this.swiper.slides;
         const activeIndex = this.swiper.activeIndex;
-  
+
         for (let i = 0; i < slides.length; i++) {
-          const video = slides[i].querySelector('.sqs-video-background-native video');
+          const video = slides[i].querySelector(
+            ".sqs-video-background-native video"
+          );
           if (video) {
             if (i === activeIndex) {
               await playVideo(video);
@@ -100,17 +105,20 @@ class WMSectionSlider {
             }
           }
         }
-      }, 50); 
+      }, 50);
     };
-  
-    this.swiper.on('realIndexChange', updateVideos);
-  
-    const observeVideoAddition = (controller) => {
-      const observer = new MutationObserver(async (mutationsList) => {
+
+    this.swiper.on("realIndexChange", updateVideos);
+
+    const observeVideoAddition = controller => {
+      const observer = new MutationObserver(async mutationsList => {
         for (const mutation of mutationsList) {
-          if (mutation.type === 'childList') {
+          if (mutation.type === "childList") {
             const addedVideo = mutation.addedNodes[0];
-            if (addedVideo && addedVideo.matches('.sqs-video-background-native video')) {
+            if (
+              addedVideo &&
+              addedVideo.matches(".sqs-video-background-native video")
+            ) {
               updateVideos();
               observer.disconnect();
               break;
@@ -118,38 +126,36 @@ class WMSectionSlider {
           }
         }
       });
-  
-      observer.observe(controller, { childList: true, subtree: true });
+
+      observer.observe(controller, {childList: true, subtree: true});
     };
-  
-    const videoControllers = container.querySelectorAll('.section-border [data-controller="VideoBackgroundNative"]');
+
+    const videoControllers = container.querySelectorAll(
+      '.section-border [data-controller="VideoBackgroundNative"]'
+    );
     videoControllers.forEach(observeVideoAddition);
-  
+
     // Initial video state setup
     updateVideos();
   }
-  addFuncRestartBackgroundVideos() {    
-    
-    this.swiper.on('realIndexChange', () => {
+  addFuncRestartBackgroundVideos() {
+    this.swiper.on("realIndexChange", () => {
       this.swiper.slides.forEach((slide, index) => {
-        const video = slide.querySelector('.sqs-video-background-native video');
+        const video = slide.querySelector(".sqs-video-background-native video");
         if (video) {
           if (index === this.swiper.activeIndex) {
             video.currentTime = 0;
             video.play();
           } else {
-
-            
           }
         }
       });
     });
-    this.swiper.on('transitionEnd', () => {
+    this.swiper.on("transitionEnd", () => {
       this.swiper.slides.forEach((slide, index) => {
-        const video = slide.querySelector('.sqs-video-background-native video');
+        const video = slide.querySelector(".sqs-video-background-native video");
         if (video) {
           if (index === this.swiper.activeIndex) {
-
           } else {
             video.pause();
             video.currentTime = 0;
@@ -166,13 +172,19 @@ class WMSectionSlider {
     this.swiper.slideTo(randomIndex);
   }
   addFuncHeaderColorThemeMatch() {
-    const isFirstSection = this.el.matches('#sections > *:first-child');
-    const isFixedHeader = window.Static?.SQUARESPACE_CONTEXT?.tweakJSON['tweak-fixed-header'] === 'true';
+    const isFirstSection = this.el.matches("#sections > *:first-child");
+    const isFixedHeader =
+      window.Static?.SQUARESPACE_CONTEXT?.tweakJSON["tweak-fixed-header"] ===
+      "true";
 
-    if (isFirstSection && this.settings.headerColorThemeMatch && !isFixedHeader) {
+    if (
+      isFirstSection &&
+      this.settings.headerColorThemeMatch &&
+      !isFixedHeader
+    ) {
       this.swiper.on("activeIndexChange", () => {
         const colorTheme = this.activeSection.dataset.sectionTheme;
-        const header = document.getElementById('header');
+        const header = document.getElementById("header");
         if (header) {
           header.dataset.sectionTheme = colorTheme;
         }
@@ -199,10 +211,12 @@ class WMSectionSlider {
       loop: data.loop ? parseAttributeValue(data.loop) : true,
       rewind: parseAttributeValue(data.rewind) || false,
       autoplay: getAutoplaySettings(data, this.settings),
-      autoHeight: data.fixedHeight ? !parseAttributeValue(data.fixedHeight) : true,
+      autoHeight: data.fixedHeight
+        ? !parseAttributeValue(data.fixedHeight)
+        : true,
       crossFade: false,
       coverflowEffect: getCoverflowEffect(data, this.settings),
-      effect: parseAttributeValue(data.effect) || 'slide',
+      effect: parseAttributeValue(data.effect) || "slide",
       pagination: getPaginationSettings(data, this.settings),
       slidesPerView: parseAttributeValue(data.slidesPerView) || 1,
       centeredSlides: parseAttributeValue(data.centeredSlides) || false,
@@ -211,24 +225,39 @@ class WMSectionSlider {
         // Mobile - when window width is >= 0px
         0: {
           slidesPerView: parseAttributeValue(data.mobileSlidesPerView) || 1,
-          spaceBetween: parseAttributeValue(data.mobileSpaceBetween) || parseAttributeValue(data.spaceBetween) || 0
+          spaceBetween:
+            parseAttributeValue(data.mobileSpaceBetween) ||
+            parseAttributeValue(data.spaceBetween) ||
+            0,
         },
         // Tablet - when window width is >= 767px
         767: {
-          slidesPerView: parseAttributeValue(data.tabletSlidesPerView) || parseAttributeValue(data.slidesPerView) || 1,
-          spaceBetween: parseAttributeValue(data.tabletSpaceBetween) || parseAttributeValue(data.spaceBetween) || 0,
+          slidesPerView:
+            parseAttributeValue(data.tabletSlidesPerView) ||
+            parseAttributeValue(data.slidesPerView) ||
+            1,
+          spaceBetween:
+            parseAttributeValue(data.tabletSpaceBetween) ||
+            parseAttributeValue(data.spaceBetween) ||
+            0,
         },
         // Desktop - when window width is >= 1024px
         1024: {
           slidesPerView: parseAttributeValue(data.slidesPerView) || 1,
           spaceBetween: parseAttributeValue(data.spaceBetween) || 0,
-        }
-      }
+        },
+      },
     });
 
     function getPaginationSettings(data, settings) {
       const render = (index, className) => {
-        return '<span class="numbered-bullet ' + className + '">' + (index + 1) + "</span>";
+        return (
+          '<span class="numbered-bullet ' +
+          className +
+          '">' +
+          (index + 1) +
+          "</span>"
+        );
       };
       return {
         el: ".swiper-pagination",
@@ -246,16 +275,16 @@ class WMSectionSlider {
       return value;
     }
     function getCoverflowEffect(data, settings) {
-      if (parseAttributeValue(data.effect) !== 'coverflow') {
+      if (parseAttributeValue(data.effect) !== "coverflow") {
         return false;
       }
       return {
         depth: settings.coverflow?.depth ?? 100,
         rotate: settings.coverflow?.rotate ?? 50,
         scale: settings.coverflow?.scale ?? 0.9,
-        slideShadows: settings.coverflow?.slideShadows ?? true
+        slideShadows: settings.coverflow?.slideShadows ?? true,
       };
-    } 
+    }
     function getAutoplaySettings(data, settings) {
       const timer = parseAttributeValue(data.autoplayTimer);
       const loop = data.loop ? parseAttributeValue(data.loop) : true;
@@ -263,11 +292,14 @@ class WMSectionSlider {
       if (!timer) {
         return false;
       }
-      
+
       return {
         delay: timer,
         stopOnLastSlide: stopOnLastSlide,
-        disableOnInteraction: parseAttributeValue(data.autoplayDisableOnInteraction) || settings.autoplayDisableOnInteraction || false,
+        disableOnInteraction:
+          parseAttributeValue(data.autoplayDisableOnInteraction) ||
+          settings.autoplayDisableOnInteraction ||
+          false,
       };
     }
   }
@@ -280,7 +312,7 @@ class WMSectionSlider {
   }
 }
 
-(function() {
+(function () {
   class Utilities {
     static deepMerger(...objs) {
       function getType(obj) {
@@ -289,13 +321,13 @@ class WMSectionSlider {
       function mergeObj(clone, obj) {
         for (let [key, value] of Object.entries(obj)) {
           let type = getType(value);
-          if (type === 'object' || type === 'array') {
+          if (type === "object" || type === "array") {
             if (clone[key] === undefined) {
-              clone[key] = type === 'object' ? {} : [];
+              clone[key] = type === "object" ? {} : [];
             }
-            mergeObj(clone[key], value);  // Corrected recursive call
-          } else if (type === 'function') {
-            clone[key] = value;  // Directly reference the function
+            mergeObj(clone[key], value); // Corrected recursive call
+          } else if (type === "function") {
+            clone[key] = value; // Directly reference the function
           } else {
             clone[key] = value;
           }
@@ -313,17 +345,17 @@ class WMSectionSlider {
     static emitEvent(type, detail = {}, elem = document) {
       // Make sure there's an event type
       if (!type) return;
-  
+
       // Create a new event
       let event = new CustomEvent(type, {
         bubbles: true,
         cancelable: true,
         detail: detail,
       });
-  
+
       // Dispatch the event
       return elem.dispatchEvent(event);
-    };
+    }
     static parseAttributeValue(value) {
       if (value === "true") return true;
       if (value === "false") return false;
@@ -333,42 +365,48 @@ class WMSectionSlider {
     }
   }
   class ScriptLoader {
-    static siteBundleSelector = 'script[src*="https://static1.squarespace.com/static/vta"]'
+    static siteBundleSelector =
+      'script[src*="https://static1.squarespace.com/static/vta"]';
     static async reloadSiteBundle() {
-      const siteBundle = document.querySelector(ScriptLoader.siteBundleSelector);
-      await ScriptLoader.loadScript(siteBundle.src)
+      const siteBundle = document.querySelector(
+        ScriptLoader.siteBundleSelector
+      );
+      await ScriptLoader.loadScript(siteBundle.src);
     }
 
-    
     static async fromElements(els) {
       const scriptsToLoad = new Set();
       const inlineScriptsToExecute = [];
-  
+
       // Step 1: Collect and filter scripts
       els.forEach(el => {
-        el.querySelectorAll('script').forEach(script => {
+        el.querySelectorAll("script").forEach(script => {
           if (script.src) {
             scriptsToLoad.add(script.src);
-          } else if (!script.src && script.type !== 'application/json') {
+          } else if (!script.src && script.type !== "application/json") {
             inlineScriptsToExecute.push(script.textContent || script.innerText);
           }
         });
 
         // Directly check and load scripts if needed
-        if (el.querySelector('.sqs-video-background-native') ||
-            el.querySelector('.page-section.user-items-list-section') ||
-            el.querySelector('.page-section.gallery-section') ||
-            el.querySelector('.background-fx-canvas')) {
-          const siteBundle = document.querySelector(ScriptLoader.siteBundleSelector)
+        if (
+          el.querySelector(".sqs-video-background-native") ||
+          el.querySelector(".page-section.user-items-list-section") ||
+          el.querySelector(".page-section.gallery-section") ||
+          el.querySelector(".background-fx-canvas")
+        ) {
+          const siteBundle = document.querySelector(
+            ScriptLoader.siteBundleSelector
+          );
           scriptsToLoad.add(siteBundle.src);
         }
       });
-  
+
       // Step 2: Load external scripts
       await Promise.all(
         Array.from(scriptsToLoad).map(src => this.loadScript(src))
       );
-  
+
       // Step 3: Execute inline scripts
       inlineScriptsToExecute.forEach(scriptContent => {
         this.executeInlineScript(scriptContent);
@@ -380,8 +418,8 @@ class WMSectionSlider {
           document.querySelector(ScriptLoader.siteBundleSelector).remove();
         }
 
-        const script = document.createElement('script');
-        script.id = 'reloaded'
+        const script = document.createElement("script");
+        script.id = "reloaded";
         script.src = scriptSrc;
         script.async = async;
         script.onload = resolve;
@@ -395,43 +433,49 @@ class WMSectionSlider {
       try {
         new Function(scriptContent)();
       } catch (error) {
-        console.error('Error executing inline script:', error);
+        console.error("Error executing inline script:", error);
       }
     }
     static async duplicateRootCssRule() {
-      const hasStyle = document.querySelector('style#wm-root-theme-duplicate');
+      const hasStyle = document.querySelector("style#wm-root-theme-duplicate");
       if (hasStyle) return;
-      
+
       try {
         // Fetch the CSS file
-        const response = await fetch('/site.css');
+        const response = await fetch("/site.css");
         const cssText = await response.text();
-    
+
         // Parse the CSS to find the second :root rule
-        const cssRules = cssText.split('}').map(rule => rule.trim() + '}'); // Split and reassemble CSS rules
-        const rootRules = cssRules.filter(rule => rule.startsWith(':root'));
+        const cssRules = cssText.split("}").map(rule => rule.trim() + "}"); // Split and reassemble CSS rules
+        const rootRules = cssRules.filter(rule => rule.startsWith(":root"));
         if (rootRules.length < 2) {
-          console.error('Second :root rule not found');
+          console.error("Second :root rule not found");
           return;
         }
-    
+
         // Duplicate and modify the rule
-        const newRuleText = rootRules[1].replace(':root', '[data-section-theme="white"]');
-        
+        const newRuleText = rootRules[1].replace(
+          ":root",
+          '[data-section-theme="white"]'
+        );
+
         // Append the new rule as an internal style sheet
-        const styleTag = document.createElement('style');
+        const styleTag = document.createElement("style");
         styleTag.textContent += newRuleText; // Use += in case you want to append multiple rules
-        styleTag.dataset.description = "Duplicated of the :root Color Theme styles"
-        styleTag.id = "wm-root-theme-duplicate"
+        styleTag.dataset.description =
+          "Duplicated of the :root Color Theme styles";
+        styleTag.id = "wm-root-theme-duplicate";
         document.head.prepend(styleTag);
       } catch (error) {
-        console.error('Error fetching or duplicated :root CSS rule', error);
+        console.error("Error fetching or duplicated :root CSS rule", error);
       }
     }
     static loadShapeBlocks(els) {
-      if (document.querySelector('style#wm-shape-block-styles')) return;
+      if (document.querySelector("style#wm-shape-block-styles")) return;
       for (let el of els) {
-        if (el.querySelector('[data-definition-name="website.components.shape"]')) {
+        if (
+          el.querySelector('[data-definition-name="website.components.shape"]')
+        ) {
           addShapeBlockStyles();
           break; // Exit after adding styles once
         }
@@ -463,10 +507,10 @@ class WMSectionSlider {
             position: relative;
             color: var(--shape-block-dropshadow-color);
           }`;
-          
-        const styleElement = document.createElement('style');
-        styleElement.id = 'wm-shape-block-styles'
-        styleElement.type = 'text/css';
+
+        const styleElement = document.createElement("style");
+        styleElement.id = "wm-shape-block-styles";
+        styleElement.type = "text/css";
         styleElement.appendChild(document.createTextNode(styleContent));
         document.head.appendChild(styleElement);
       }
@@ -475,19 +519,19 @@ class WMSectionSlider {
   class DataFetcher {
     static async getItemsFromCollection(path) {
       try {
-        const url = new URL(path, window.location.origin); 
-        const params = new URLSearchParams(url.search); 
+        const url = new URL(path, window.location.origin);
+        const params = new URLSearchParams(url.search);
         let isFeatured;
         if (params.has("featured")) {
-          isFeatured = true; 
+          isFeatured = true;
           params.delete("featured");
         }
-  
+
         const date = new Date().getTime(); // Adding a cache busting parameter
         params.set("format", "json");
         params.set("date", date);
         url.search = params.toString(); // Update the search part of the URL
-  
+
         // Make the fetch request using the updated URL
         const response = await fetch(url.toString());
         if (!response.ok) {
@@ -517,13 +561,13 @@ class WMSectionSlider {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const html = await response.text();
-  
+
         // Parse the HTML and extract content based on the selector
         // Create a new DOM parser
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, "text/html");
         const selectedContent = doc.querySelector(selector);
-  
+
         // Return the outer HTML of the selected element or an empty string if not found
         return selectedContent ? selectedContent.outerHTML : "";
       } catch (error) {
@@ -535,8 +579,10 @@ class WMSectionSlider {
       const data = await DataFetcher.getItemsFromCollection(path);
       const items = data.items;
       if (items[0].recordTypeLabel == "portfolio-item") {
-        const fetchPromises = items.map(item => DataFetcher.getHTMLFromURL(item.fullUrl)); 
-        const contents = await Promise.all(fetchPromises); 
+        const fetchPromises = items.map(item =>
+          DataFetcher.getHTMLFromURL(item.fullUrl)
+        );
+        const contents = await Promise.all(fetchPromises);
         items.forEach((item, index) => (item.body = contents[index]));
       }
       return data;
@@ -565,7 +611,7 @@ class WMSectionSlider {
         }
       });
     });
-  
+
     bodyObserver.observe(document.body, {
       attributes: true,
     });
@@ -574,14 +620,15 @@ class WMSectionSlider {
     /*Check If Need to rerun SiteBundle*/
     const sliders = window[nameSpace].items;
     for (let slider of sliders) {
-      if (slider.querySelector('.sqs-video-background-native') ||
-          slider.querySelector('.page-section.user-items-list-section') ||
-          slider.querySelector('.page-section.gallery-section') ||
-          slider.querySelector('.background-fx-canvas')) {
+      if (
+        slider.querySelector(".sqs-video-background-native") ||
+        slider.querySelector(".page-section.user-items-list-section") ||
+        slider.querySelector(".page-section.gallery-section") ||
+        slider.querySelector(".background-fx-canvas")
+      ) {
         ScriptLoader.reloadSiteBundle();
       }
     }
-
   }
 
   function buildPlugin(el, settings) {
@@ -599,17 +646,27 @@ class WMSectionSlider {
     const id = el.id;
     const colorTheme = initialSection.dataset.sectionTheme;
     const tweaks = window.Static?.SQUARESPACE_CONTEXT?.tweakJSON;
-    
+
     initialSection.insertAdjacentHTML(
       "beforebegin",
       `<section 
           data-section-theme="${colorTheme}"
-          data-header-transparent="${tweaks && tweaks['tweak-transparent-header']}"
-          class="swiper page-section wm-section-slider"${id ? ` id="${id}"` : ``}>
+          data-header-transparent="${
+            tweaks && tweaks["tweak-transparent-header"]
+          }"
+          class="swiper page-section wm-section-slider"${
+            id ? ` id="${id}"` : ``
+          }>
         <div class="swiper-wrapper">
         </div>
-        ${pagination && (navigation !== 'inline') ? `<div class="swiper-pagination"></div>` : ``}
-        ${navigation && (navigation !== 'inline') ? `<div class="navigation-wrapper">
+        ${
+          pagination && navigation !== "inline"
+            ? `<div class="swiper-pagination"></div>`
+            : ``
+        }
+        ${
+          navigation && navigation !== "inline"
+            ? `<div class="navigation-wrapper">
           <div class="navigation-button-prev">
             <button>
               <div class="swiper-button-background"></div>
@@ -622,9 +679,12 @@ class WMSectionSlider {
               ${settings.nextIcon}
             </button>
           </div>
-        </div>` : ``
+        </div>`
+            : ``
         }
-        ${navigation === 'inline' && pagination === 'inline' ? `<div class="inline-navigation-wrapper">
+        ${
+          navigation === "inline" && pagination === "inline"
+            ? `<div class="inline-navigation-wrapper">
           <div class="navigation-button-prev">
             <button>
               <div class="swiper-button-background"></div>
@@ -638,7 +698,8 @@ class WMSectionSlider {
               ${settings.nextIcon}
             </button>
           </div>
-        </div>` : ``
+        </div>`
+            : ``
         }
       </section>`
     );
@@ -650,14 +711,14 @@ class WMSectionSlider {
     for (let i = 0; i < sectionsCount; i++) {
       if (!nextSection) break; // Break if there are no more sibling sections
 
-      if (i == 0 && static == 'background') {
-        swiper.dataset.static = 'background';
-        nextSection.classList.add('static-slide')
-        swiper.appendChild(nextSection)
-      } else if (i == 0 && static === 'content') {
-        swiper.dataset.static = 'content';
-        nextSection.classList.add('static-slide')
-        swiper.prepend(nextSection)
+      if (i == 0 && static == "background") {
+        swiper.dataset.static = "background";
+        nextSection.classList.add("static-slide");
+        swiper.appendChild(nextSection);
+      } else if (i == 0 && static === "content") {
+        swiper.dataset.static = "content";
+        nextSection.classList.add("static-slide");
+        swiper.prepend(nextSection);
       } else {
         const slide = document.createElement("div");
         slide.classList.add("swiper-slide");
@@ -672,22 +733,24 @@ class WMSectionSlider {
 
   // Utility or helper functions
   async function initPlugin() {
-    let pluginEls = document.querySelectorAll('[data-wm-plugin="section-slider"]:not([data-loading-state])');
+    let pluginEls = document.querySelectorAll(
+      '[data-wm-plugin="section-slider"]:not([data-loading-state])'
+    );
     if (!pluginEls.length) return;
     const settings = window[nameSpace].settings;
     ScriptLoader.duplicateRootCssRule();
 
     pluginEls.forEach(el => {
-      if (el.closest('section.wm-section-slider')) return;
+      if (el.closest("section.wm-section-slider") || el.closest("body.sqs-edit-mode-active")) return;
       const sliderEl = buildPlugin(el, settings);
       el.wmSectionSlider = new WMSectionSlider(sliderEl, settings);
       window[nameSpace].items.push(sliderEl);
     });
-  
+
     Utilities.emitEvent(`${nameSpace}:ready`);
   }
 
-  const nameSpace = 'wmSectionSlider'
+  const nameSpace = "wmSectionSlider";
   const defaultSettings = {
     pauseInactiveBackgroundVideos: true,
     restartBackgroundVideos: false,
@@ -703,38 +766,41 @@ class WMSectionSlider {
       <path class="user-items-list-carousel__arrow-icon-foreground user-items-list-carousel__arrow-icon-path" d="M34.1477 1.39111L41.9321 9.17551L34.1477 16.9599"></path>
       <path class="user-items-list-carousel__arrow-icon-foreground user-items-list-carousel__arrow-icon-path" d="M1.19088 9.16982H40.6755"></path>
     </svg>`,
-      coverflow: {
-        depth: 100,
-        rotate: 50,
-        scale: 0.9,
-        slideShadows: true,
-      }
-    }
+    coverflow: {
+      depth: 100,
+      rotate: 50,
+      scale: 0.9,
+      slideShadows: true,
+    },
+  };
   const userSettings = window.wmSectionSliderSettings || {};
-  
+
   // Correctly expose the initPlugin method on the window
   window[nameSpace] = {
     init: () => {
-      initPlugin()
+      initPlugin();
       afterInit();
     },
     items: [],
   };
-  window[nameSpace].settings = Utilities.deepMerger({}, defaultSettings, userSettings);
+  window[nameSpace].settings = Utilities.deepMerger(
+    {},
+    defaultSettings,
+    userSettings
+  );
   window[nameSpace].dataFetcher = DataFetcher;
   window[nameSpace].scriptLoader = ScriptLoader;
   window[nameSpace].utilities = Utilities;
   window[nameSpace].deconstruct = deconstruct;
-  
+
   // Now you can call the init method directly
   if (document.ready) {
     window[nameSpace].init();
-    if (window.self !== window.top) addDeconstructListener()
+    if (window.self !== window.top) addDeconstructListener();
   } else {
     window.addEventListener("DOMContentLoaded", () => {
       window[nameSpace].init();
-      if (window.self !== window.top) addDeconstructListener()
-    })
+      if (window.self !== window.top) addDeconstructListener();
+    });
   }
-
 })();
