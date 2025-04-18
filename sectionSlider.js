@@ -56,10 +56,7 @@ class WMSectionSlider {
   }
   addSlideChangeEventListener() {
     this.swiper.on("activeIndexChange", () => {
-      this.activeSection =
-        this.swiper.slides[this.swiper.activeIndex].querySelector(
-          ".page-section"
-        );
+      this.activeSection = this.swiper.slides[this.swiper.activeIndex].querySelector(".page-section");
       WMSectionSlider.emitEvent("wmSectionSlider:slideChange", {
         container: this.el,
         activeSection: this.activeSection,
@@ -94,9 +91,7 @@ class WMSectionSlider {
         const activeIndex = this.swiper.activeIndex;
 
         for (let i = 0; i < slides.length; i++) {
-          const video = slides[i].querySelector(
-            ".sqs-video-background-native video"
-          );
+          const video = slides[i].querySelector(".sqs-video-background-native video");
           if (video) {
             if (i === activeIndex) {
               await playVideo(video);
@@ -115,10 +110,7 @@ class WMSectionSlider {
         for (const mutation of mutationsList) {
           if (mutation.type === "childList") {
             const addedVideo = mutation.addedNodes[0];
-            if (
-              addedVideo &&
-              addedVideo.matches(".sqs-video-background-native video")
-            ) {
+            if (addedVideo && addedVideo.matches(".sqs-video-background-native video")) {
               updateVideos();
               observer.disconnect();
               break;
@@ -130,9 +122,7 @@ class WMSectionSlider {
       observer.observe(controller, {childList: true, subtree: true});
     };
 
-    const videoControllers = container.querySelectorAll(
-      '.section-border [data-controller="VideoBackgroundNative"]'
-    );
+    const videoControllers = container.querySelectorAll('.section-border [data-controller="VideoBackgroundNative"]');
     videoControllers.forEach(observeVideoAddition);
 
     // Initial video state setup
@@ -173,15 +163,9 @@ class WMSectionSlider {
   }
   addFuncHeaderColorThemeMatch() {
     const isFirstSection = this.el.matches("#sections > *:first-child");
-    const isFixedHeader =
-      window.Static?.SQUARESPACE_CONTEXT?.tweakJSON["tweak-fixed-header"] ===
-      "true";
+    const isFixedHeader = window.Static?.SQUARESPACE_CONTEXT?.tweakJSON["tweak-fixed-header"] === "true";
 
-    if (
-      isFirstSection &&
-      this.settings.headerColorThemeMatch &&
-      !isFixedHeader
-    ) {
+    if (isFirstSection && this.settings.headerColorThemeMatch && !isFixedHeader) {
       this.swiper.on("activeIndexChange", () => {
         const colorTheme = this.activeSection.dataset.sectionTheme;
         const header = document.getElementById("header");
@@ -211,9 +195,7 @@ class WMSectionSlider {
       loop: data.loop ? parseAttributeValue(data.loop) : true,
       rewind: parseAttributeValue(data.rewind) || false,
       autoplay: getAutoplaySettings(data, this.settings),
-      autoHeight: data.fixedHeight
-        ? !parseAttributeValue(data.fixedHeight)
-        : true,
+      autoHeight: data.fixedHeight ? !parseAttributeValue(data.fixedHeight) : true,
       crossFade: false,
       coverflowEffect: getCoverflowEffect(data, this.settings),
       effect: parseAttributeValue(data.effect) || "slide",
@@ -225,25 +207,31 @@ class WMSectionSlider {
         // Mobile - when window width is >= 0px
         0: {
           slidesPerView: parseAttributeValue(data.mobileSlidesPerView) || 1,
-          spaceBetween:
-            parseAttributeValue(data.mobileSpaceBetween) ||
-            parseAttributeValue(data.spaceBetween) ||
-            0,
+          centeredSlides: data.centeredSlides 
+              ? parseAttributeValue(data.mobileSlidesPerView) === 1 
+              ? false 
+              : parseAttributeValue(data.centeredSlides) 
+              : false,
+          spaceBetween: parseAttributeValue(data.mobileSpaceBetween) || parseAttributeValue(data.spaceBetween) || 0,
         },
         // Tablet - when window width is >= 767px
         767: {
-          slidesPerView:
-            parseAttributeValue(data.tabletSlidesPerView) ||
-            parseAttributeValue(data.slidesPerView) ||
-            1,
-          spaceBetween:
-            parseAttributeValue(data.tabletSpaceBetween) ||
-            parseAttributeValue(data.spaceBetween) ||
-            0,
+          slidesPerView: parseAttributeValue(data.tabletSlidesPerView) || parseAttributeValue(data.slidesPerView) || 1,
+          centeredSlides: data.centeredSlides 
+            ? parseAttributeValue(data.tabletSlidesPerView) === 1 
+            ? false 
+            : parseAttributeValue(data.centeredSlides) 
+            : false,
+          spaceBetween: parseAttributeValue(data.tabletSpaceBetween) || parseAttributeValue(data.spaceBetween) || 0,
         },
         // Desktop - when window width is >= 1024px
         1024: {
           slidesPerView: parseAttributeValue(data.slidesPerView) || 1,
+          centeredSlides: data.centeredSlides 
+            ? parseAttributeValue(data.slidesPerView) === 1 
+            ? false 
+            : parseAttributeValue(data.centeredSlides) 
+            : false,
           spaceBetween: parseAttributeValue(data.spaceBetween) || 0,
         },
       },
@@ -251,20 +239,13 @@ class WMSectionSlider {
 
     function getPaginationSettings(data, settings) {
       const render = (index, className) => {
-        return (
-          '<span class="numbered-bullet ' +
-          className +
-          '">' +
-          (index + 1) +
-          "</span>"
-        );
+        return '<span class="numbered-bullet ' + className + '">' + (index + 1) + "</span>";
       };
       return {
         el: ".swiper-pagination",
         clickable: parseAttributeValue(data.paginationClickable) || true,
         dynamicBullets: parseAttributeValue(data.dynamicBullets) || false,
-        renderBullet:
-          settings[parseAttributeValue(data.renderBullet)] || render,
+        renderBullet: settings[parseAttributeValue(data.renderBullet)] || render,
       };
     }
     function parseAttributeValue(value) {
@@ -296,10 +277,7 @@ class WMSectionSlider {
       return {
         delay: timer,
         stopOnLastSlide: stopOnLastSlide,
-        disableOnInteraction:
-          parseAttributeValue(data.autoplayDisableOnInteraction) ||
-          settings.autoplayDisableOnInteraction ||
-          false,
+        disableOnInteraction: parseAttributeValue(data.autoplayDisableOnInteraction) || settings.autoplayDisableOnInteraction || false,
       };
     }
   }
@@ -365,12 +343,9 @@ class WMSectionSlider {
     }
   }
   class ScriptLoader {
-    static siteBundleSelector =
-      'script[src*="https://static1.squarespace.com/static/vta"]';
+    static siteBundleSelector = 'script[src*="https://static1.squarespace.com/static/vta"]';
     static async reloadSiteBundle() {
-      const siteBundle = document.querySelector(
-        ScriptLoader.siteBundleSelector
-      );
+      const siteBundle = document.querySelector(ScriptLoader.siteBundleSelector);
       await ScriptLoader.loadScript(siteBundle.src);
     }
 
@@ -389,23 +364,14 @@ class WMSectionSlider {
         });
 
         // Directly check and load scripts if needed
-        if (
-          el.querySelector(".sqs-video-background-native") ||
-          el.querySelector(".page-section.user-items-list-section") ||
-          el.querySelector(".page-section.gallery-section") ||
-          el.querySelector(".background-fx-canvas")
-        ) {
-          const siteBundle = document.querySelector(
-            ScriptLoader.siteBundleSelector
-          );
+        if (el.querySelector(".sqs-video-background-native") || el.querySelector(".page-section.user-items-list-section") || el.querySelector(".page-section.gallery-section") || el.querySelector(".background-fx-canvas")) {
+          const siteBundle = document.querySelector(ScriptLoader.siteBundleSelector);
           scriptsToLoad.add(siteBundle.src);
         }
       });
 
       // Step 2: Load external scripts
-      await Promise.all(
-        Array.from(scriptsToLoad).map(src => this.loadScript(src))
-      );
+      await Promise.all(Array.from(scriptsToLoad).map(src => this.loadScript(src)));
 
       // Step 3: Execute inline scripts
       inlineScriptsToExecute.forEach(scriptContent => {
@@ -454,16 +420,12 @@ class WMSectionSlider {
         }
 
         // Duplicate and modify the rule
-        const newRuleText = rootRules[1].replace(
-          ":root",
-          '[data-section-theme="white"]'
-        );
+        const newRuleText = rootRules[1].replace(":root", '[data-section-theme="white"]');
 
         // Append the new rule as an internal style sheet
         const styleTag = document.createElement("style");
         styleTag.textContent += newRuleText; // Use += in case you want to append multiple rules
-        styleTag.dataset.description =
-          "Duplicated of the :root Color Theme styles";
+        styleTag.dataset.description = "Duplicated of the :root Color Theme styles";
         styleTag.id = "wm-root-theme-duplicate";
         document.head.prepend(styleTag);
       } catch (error) {
@@ -473,9 +435,7 @@ class WMSectionSlider {
     static loadShapeBlocks(els) {
       if (document.querySelector("style#wm-shape-block-styles")) return;
       for (let el of els) {
-        if (
-          el.querySelector('[data-definition-name="website.components.shape"]')
-        ) {
+        if (el.querySelector('[data-definition-name="website.components.shape"]')) {
           addShapeBlockStyles();
           break; // Exit after adding styles once
         }
@@ -579,9 +539,7 @@ class WMSectionSlider {
       const data = await DataFetcher.getItemsFromCollection(path);
       const items = data.items;
       if (items[0].recordTypeLabel == "portfolio-item") {
-        const fetchPromises = items.map(item =>
-          DataFetcher.getHTMLFromURL(item.fullUrl)
-        );
+        const fetchPromises = items.map(item => DataFetcher.getHTMLFromURL(item.fullUrl));
         const contents = await Promise.all(fetchPromises);
         items.forEach((item, index) => (item.body = contents[index]));
       }
@@ -620,12 +578,7 @@ class WMSectionSlider {
     /*Check If Need to rerun SiteBundle*/
     const sliders = window[nameSpace].items;
     for (let slider of sliders) {
-      if (
-        slider.querySelector(".sqs-video-background-native") ||
-        slider.querySelector(".page-section.user-items-list-section") ||
-        slider.querySelector(".page-section.gallery-section") ||
-        slider.querySelector(".background-fx-canvas")
-      ) {
+      if (slider.querySelector(".sqs-video-background-native") || slider.querySelector(".page-section.user-items-list-section") || slider.querySelector(".page-section.gallery-section") || slider.querySelector(".background-fx-canvas")) {
         ScriptLoader.reloadSiteBundle();
       }
     }
@@ -634,15 +587,9 @@ class WMSectionSlider {
   function buildPlugin(el, settings) {
     const initialSection = el.closest(".page-section");
     const sectionsCount = el.dataset.slides || 3;
-    const pagination = el.dataset.pagination
-      ? Utilities.parseAttributeValue(el.dataset.pagination)
-      : true;
-    const navigation = el.dataset.navigation
-      ? Utilities.parseAttributeValue(el.dataset.navigation)
-      : true;
-    const static = el.dataset.static
-      ? Utilities.parseAttributeValue(el.dataset.static)
-      : false;
+    const pagination = el.dataset.pagination ? Utilities.parseAttributeValue(el.dataset.pagination) : true;
+    const navigation = el.dataset.navigation ? Utilities.parseAttributeValue(el.dataset.navigation) : true;
+    const isStatic = el.dataset.static ? Utilities.parseAttributeValue(el.dataset.static) : false;
     const id = el.id;
     const colorTheme = initialSection.dataset.sectionTheme;
     const tweaks = window.Static?.SQUARESPACE_CONTEXT?.tweakJSON;
@@ -651,19 +598,11 @@ class WMSectionSlider {
       "beforebegin",
       `<section 
           data-section-theme="${colorTheme}"
-          data-header-transparent="${
-            tweaks && tweaks["tweak-transparent-header"]
-          }"
-          class="swiper page-section wm-section-slider"${
-            id ? ` id="${id}"` : ``
-          }>
+          data-header-transparent="${tweaks && tweaks["tweak-transparent-header"]}"
+          class="swiper page-section wm-section-slider"${id ? ` id="${id}"` : ``}>
         <div class="swiper-wrapper">
         </div>
-        ${
-          pagination && navigation !== "inline"
-            ? `<div class="swiper-pagination"></div>`
-            : ``
-        }
+        ${pagination && navigation !== "inline" ? `<div class="swiper-pagination"></div>` : ``}
         ${
           navigation && navigation !== "inline"
             ? `<div class="navigation-wrapper">
@@ -711,11 +650,11 @@ class WMSectionSlider {
     for (let i = 0; i < sectionsCount; i++) {
       if (!nextSection) break; // Break if there are no more sibling sections
 
-      if (i == 0 && static == "background") {
+      if (i == 0 && isStatic == "background") {
         swiper.dataset.static = "background";
         nextSection.classList.add("static-slide");
         swiper.appendChild(nextSection);
-      } else if (i == 0 && static === "content") {
+      } else if (i == 0 && isStatic === "content") {
         swiper.dataset.static = "content";
         nextSection.classList.add("static-slide");
         swiper.prepend(nextSection);
@@ -733,9 +672,7 @@ class WMSectionSlider {
 
   // Utility or helper functions
   async function initPlugin() {
-    let pluginEls = document.querySelectorAll(
-      '[data-wm-plugin="section-slider"]:not([data-loading-state])'
-    );
+    let pluginEls = document.querySelectorAll('[data-wm-plugin="section-slider"]:not([data-loading-state])');
     if (!pluginEls.length) return;
     const settings = window[nameSpace].settings;
     ScriptLoader.duplicateRootCssRule();
@@ -783,11 +720,7 @@ class WMSectionSlider {
     },
     items: [],
   };
-  window[nameSpace].settings = Utilities.deepMerger(
-    {},
-    defaultSettings,
-    userSettings
-  );
+  window[nameSpace].settings = Utilities.deepMerger({}, defaultSettings, userSettings);
   window[nameSpace].dataFetcher = DataFetcher;
   window[nameSpace].scriptLoader = ScriptLoader;
   window[nameSpace].utilities = Utilities;
