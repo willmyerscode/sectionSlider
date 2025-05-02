@@ -189,8 +189,8 @@ class WMSectionSlider {
     this.swiper = new Swiper(this.el, {
       speed: data.transitionSpeed || 400,
       navigation: {
-        nextEl: ".navigation-button-next",
-        prevEl: ".navigation-button-prev",
+        nextEl: this.el.querySelector(".navigation-button-next"),
+        prevEl: this.el.querySelector(".navigation-button-prev"),
       },
       loop: data.loop ? parseAttributeValue(data.loop) : true,
       rewind: parseAttributeValue(data.rewind) || false,
@@ -199,7 +199,7 @@ class WMSectionSlider {
       crossFade: false,
       coverflowEffect: getCoverflowEffect(data, this.settings),
       effect: parseAttributeValue(data.effect) || "slide",
-      pagination: getPaginationSettings(data, this.settings),
+      pagination: getPaginationSettings(this, data, this.settings),
       slidesPerView: parseAttributeValue(data.slidesPerView) || 1,
       centeredSlides: parseAttributeValue(data.centeredSlides) || false,
       spaceBetween: data.spaceBetween || 0,
@@ -237,12 +237,12 @@ class WMSectionSlider {
       },
     });
 
-    function getPaginationSettings(data, settings) {
+    function getPaginationSettings(self, data, settings) {
       const render = (index, className) => {
         return '<span class="numbered-bullet ' + className + '">' + (index + 1) + "</span>";
       };
       return {
-        el: ".swiper-pagination",
+        el: self.el.querySelector(".swiper-pagination"),
         clickable: parseAttributeValue(data.paginationClickable) || true,
         dynamicBullets: parseAttributeValue(data.dynamicBullets) || false,
         renderBullet: settings[parseAttributeValue(data.renderBullet)] || render,
