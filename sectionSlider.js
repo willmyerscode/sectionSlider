@@ -186,6 +186,19 @@ class WMSectionSlider {
 
   initSwiper() {
     const data = this.initEl.dataset;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const requestedEffect = parseAttributeValue(data.effect) || "slide";
+    const iosFallback = data.iosFallbackEffect || this.settings.coverflow?.iosFallbackEffect;
+    const useEffect = (isIOS && requestedEffect === "coverflow" && iosFallback) 
+      ? iosFallback 
+      : requestedEffect;
+
+    console.log('useEffect', useEffect);
+    console.log('isIOS', isIOS);
+    console.log('requestedEffect', requestedEffect);
+    console.log('iosFallback', iosFallback);
+    
     this.swiper = new Swiper(this.el, {
       speed: data.transitionSpeed || 400,
       navigation: {
@@ -197,8 +210,8 @@ class WMSectionSlider {
       autoplay: getAutoplaySettings(data, this.settings),
       autoHeight: data.fixedHeight ? !parseAttributeValue(data.fixedHeight) : true,
       crossFade: false,
-      coverflowEffect: getCoverflowEffect(data, this.settings),
-      effect: parseAttributeValue(data.effect) || "slide",
+      coverflowEffect: getCoverflowEffect(data, this.settings, useEffect),
+      effect: useEffect,
       pagination: getPaginationSettings(this, data, this.settings),
       slidesPerView: parseAttributeValue(data.slidesPerView) || 1,
       centeredSlides: parseAttributeValue(data.centeredSlides) || false,
@@ -255,8 +268,8 @@ class WMSectionSlider {
       if (!isNaN(number) && number.toString() === value) return number;
       return value;
     }
-    function getCoverflowEffect(data, settings) {
-      if (parseAttributeValue(data.effect) !== "coverflow") {
+    function getCoverflowEffect(data, settings, activeEffect) {
+      if (activeEffect !== "coverflow") {
         return false;
       }
       return {
@@ -476,76 +489,7 @@ class WMSectionSlider {
       }
     }
   }
-  class DataFetcher {
-    static async getItemsFromCollection(path) {
-      try {
-        const url = new URL(path, window.location.origin);
-        const params = new URLSearchParams(url.search);
-        let isFeatured;
-        if (params.has("featured")) {
-          isFeatured = true;
-          params.delete("featured");
-        }
 
-        const date = new Date().getTime(); // Adding a cache busting parameter
-        params.set("format", "json");
-        params.set("date", date);
-        url.search = params.toString(); // Update the search part of the URL
-
-        // Make the fetch request using the updated URL
-        const response = await fetch(url.toString());
-        if (!response.ok) {
-          throw new Error(`Network response was not ok: ${response.status}`);
-        }
-        const data = await response.json();
-        if (data.past || data.upcoming) {
-          data.collectionType = "events";
-        }
-        if (!data.items) {
-          throw new Error(`No items in the collection`);
-        }
-        if (isFeatured) {
-          data.items = data.items.filter(item => item.starred === true);
-        }
-        return data; // Return the data so it can be used after await
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        throw error;
-      }
-    }
-    static async getHTMLFromURL(url, selector = "#sections") {
-      try {
-        // Fetch the content from the URL
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const html = await response.text();
-
-        // Parse the HTML and extract content based on the selector
-        // Create a new DOM parser
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, "text/html");
-        const selectedContent = doc.querySelector(selector);
-
-        // Return the outer HTML of the selected element or an empty string if not found
-        return selectedContent ? selectedContent.outerHTML : "";
-      } catch (error) {
-        console.error("Error fetching URL:", error);
-        return "";
-      }
-    }
-    static async getCollectionItemsHTML(path) {
-      const data = await DataFetcher.getItemsFromCollection(path);
-      const items = data.items;
-      if (items[0].recordTypeLabel == "portfolio-item") {
-        const fetchPromises = items.map(item => DataFetcher.getHTMLFromURL(item.fullUrl));
-        const contents = await Promise.all(fetchPromises);
-        items.forEach((item, index) => (item.body = contents[index]));
-      }
-      return data;
-    }
-  }
   function deconstruct() {
     document.querySelectorAll(".wm-section-slider").forEach(swiper => {
       swiper.swiper?.destroy();
@@ -679,8 +623,10 @@ class WMSectionSlider {
 
     pluginEls.forEach(el => {
       if (el.closest("section.wm-section-slider") || el.closest("body.sqs-edit-mode-active")) return;
+      el.setAttribute('data-loading-state', 'initializing');
       const sliderEl = buildPlugin(el, settings);
       el.wmSectionSlider = new WMSectionSlider(sliderEl, settings);
+      el.setAttribute('data-loading-state', 'initialized');
       window[nameSpace].items.push(sliderEl);
     });
 
@@ -708,6 +654,7 @@ class WMSectionSlider {
       rotate: 50,
       scale: 0.9,
       slideShadows: true,
+      iosFallbackEffect: false, // Set to "slide", "fade", or "cards" to disable coverflow on iOS
     },
   };
   const userSettings = window.wmSectionSliderSettings || {};
@@ -721,7 +668,6 @@ class WMSectionSlider {
     items: [],
   };
   window[nameSpace].settings = Utilities.deepMerger({}, defaultSettings, userSettings);
-  window[nameSpace].dataFetcher = DataFetcher;
   window[nameSpace].scriptLoader = ScriptLoader;
   window[nameSpace].utilities = Utilities;
   window[nameSpace].deconstruct = deconstruct;
