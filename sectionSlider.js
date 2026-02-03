@@ -193,11 +193,6 @@ class WMSectionSlider {
     const useEffect = (isIOS && requestedEffect === "coverflow" && iosFallback) 
       ? iosFallback 
       : requestedEffect;
-
-    console.log('useEffect', useEffect);
-    console.log('isIOS', isIOS);
-    console.log('requestedEffect', requestedEffect);
-    console.log('iosFallback', iosFallback);
     
     this.swiper = new Swiper(this.el, {
       speed: data.transitionSpeed || 400,
