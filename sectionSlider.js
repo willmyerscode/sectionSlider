@@ -42,6 +42,20 @@ class WMSectionSlider {
       this.setHeaderHeightVariable();
     };
     window.addEventListener("resize", handleResize);
+
+    // Swiper pauses autoplay when crossing breakpoints (e.g. mobile rotation
+    // portrait <-> landscape crosses the 767px tablet breakpoint). Resume it.
+    const restartAutoplayIfStopped = () => {
+      const ap = this.swiper?.autoplay;
+      if (!this.swiper?.params?.autoplay || !ap) return;
+      if (ap.paused) ap.resume();
+      if (!ap.running) ap.start();
+    };
+    this.swiper.on("breakpoint", restartAutoplayIfStopped);
+    window.addEventListener("orientationchange", () => {
+      // Wait for layout to settle after the rotation animation
+      setTimeout(restartAutoplayIfStopped, 250);
+    });
   }
   addDOMContentLoadedEventListener() {}
   addLoadEventListener() {}
