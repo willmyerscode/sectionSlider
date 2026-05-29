@@ -36,6 +36,7 @@ class WMSectionSlider {
     this.addAfterInitEventListener();
     this.addFuncHeaderColorThemeMatch();
     this.addFuncSliderColorThemeMatch();
+    this.addAutoplayToggle();
   }
   addResizeEventListener() {
     const handleResize = () => {
@@ -48,6 +49,7 @@ class WMSectionSlider {
     const restartAutoplayIfStopped = () => {
       const ap = this.swiper?.autoplay;
       if (!this.swiper?.params?.autoplay || !ap) return;
+      if (this._autoplayUserPaused) return;
       if (ap.paused) ap.resume();
       if (!ap.running) ap.start();
     };
@@ -196,6 +198,30 @@ class WMSectionSlider {
         this.swiper.el.dataset.sectionTheme = colorTheme;
       });
     }
+  }
+  addAutoplayToggle() {
+    const toggle = this.el.querySelector('.wm-slider-autoplay-toggle button');
+    if (!toggle) return;
+
+    this._autoplayUserPaused = false;
+
+    const updateToggleState = (playing) => {
+      toggle.setAttribute('aria-label', playing ? 'Pause slideshow' : 'Play slideshow');
+      toggle.dataset.playing = String(playing);
+    };
+
+    toggle.addEventListener('click', () => {
+      if (this.swiper.autoplay.running) {
+        this._autoplayUserPaused = true;
+        this.swiper.autoplay.stop();
+      } else {
+        this._autoplayUserPaused = false;
+        this.swiper.autoplay.start();
+      }
+    });
+
+    this.swiper.on('autoplayStop', () => updateToggleState(false));
+    this.swiper.on('autoplayStart', () => updateToggleState(true));
   }
 
   initSwiper() {
@@ -543,6 +569,7 @@ class WMSectionSlider {
     const pagination = el.dataset.pagination ? Utilities.parseAttributeValue(el.dataset.pagination) : true;
     const navigation = el.dataset.navigation ? Utilities.parseAttributeValue(el.dataset.navigation) : true;
     const isStatic = el.dataset.static ? Utilities.parseAttributeValue(el.dataset.static) : false;
+    const showAutoplayToggle = el.dataset.autoplayTimer && el.dataset.autoplayToggle !== 'false';
     const id = el.id;
     const colorTheme = initialSection.dataset.sectionTheme;
     const tweaks = window.Static?.SQUARESPACE_CONTEXT?.tweakJSON;
@@ -593,6 +620,17 @@ class WMSectionSlider {
         </div>`
             : ``
         }
+        ${showAutoplayToggle ? `<div class="wm-slider-autoplay-toggle">
+          <button aria-label="Pause slideshow" data-playing="true">
+            <svg class="wm-slider-icon-pause" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <rect x="6" y="4" width="4" height="16"/>
+              <rect x="14" y="4" width="4" height="16"/>
+            </svg>
+            <svg class="wm-slider-icon-play" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="6,4 20,12 6,20"/>
+            </svg>
+          </button>
+        </div>` : ``}
       </section>`
     );
 
