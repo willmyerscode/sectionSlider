@@ -572,7 +572,9 @@ class WMSectionSlider {
     const pagination = el.dataset.pagination ? Utilities.parseAttributeValue(el.dataset.pagination) : true;
     const navigation = el.dataset.navigation ? Utilities.parseAttributeValue(el.dataset.navigation) : true;
     const isStatic = el.dataset.static ? Utilities.parseAttributeValue(el.dataset.static) : false;
-    const showAutoplayToggle = el.dataset.autoplayTimer && el.dataset.autoplayToggle !== 'false';
+    // Opt-in only: don't auto-inject the toggle into existing sites. Owners
+    // must set data-autoplay-toggle="true" to display it.
+    const showAutoplayToggle = el.dataset.autoplayTimer && Utilities.parseAttributeValue(el.dataset.autoplayToggle) === true;
     const id = el.id;
     const colorTheme = initialSection.dataset.sectionTheme;
     const tweaks = window.Static?.SQUARESPACE_CONTEXT?.tweakJSON;

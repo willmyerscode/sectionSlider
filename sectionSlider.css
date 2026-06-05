@@ -267,10 +267,6 @@
 .wm-section-slider .wm-slider-autoplay-toggle button:focus-visible {
   opacity: 1;
 }
-.wm-section-slider .wm-slider-autoplay-toggle button:focus-visible {
-  outline: 2px solid var(--autoplay-toggle-color, var(--arrow-color, var(--list-section-carousel-arrow-color)));
-  outline-offset: 2px;
-}
 .wm-section-slider .wm-slider-autoplay-toggle button svg {
   width: 14px;
   height: 14px;
