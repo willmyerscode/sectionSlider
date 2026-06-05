@@ -48,7 +48,10 @@ class WMSectionSlider {
     // portrait <-> landscape crosses the 767px tablet breakpoint). Resume it.
     const restartAutoplayIfStopped = () => {
       const ap = this.swiper?.autoplay;
-      if (!this.swiper?.params?.autoplay || !ap) return;
+      // params.autoplay is always a truthy object (e.g. {enabled: false, ...}),
+      // so check .enabled — otherwise we'd force-start autoplay on sliders that
+      // never opted in (no data-autoplay-timer) when Swiper fires "breakpoint".
+      if (!this.swiper?.params?.autoplay?.enabled || !ap) return;
       if (this._autoplayUserPaused) return;
       if (ap.paused) ap.resume();
       if (!ap.running) ap.start();
