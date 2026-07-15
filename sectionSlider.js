@@ -183,8 +183,9 @@ class WMSectionSlider {
   addFuncHeaderColorThemeMatch() {
     const isFirstSection = this.el.matches("#sections > *:first-child");
     const isFixedHeader = window.Static?.SQUARESPACE_CONTEXT?.tweakJSON["tweak-fixed-header"] === "true";
+    const isSolidHeader = document.getElementById("header")?.dataset.headerStyle === "solid";
 
-    if (isFirstSection && this.settings.headerColorThemeMatch && !isFixedHeader) {
+    if (isFirstSection && this.settings.headerColorThemeMatch && !isFixedHeader && !isSolidHeader) {
       this.swiper.on("activeIndexChange", () => {
         const colorTheme = this.activeSection.dataset.sectionTheme;
         const header = document.getElementById("header");
