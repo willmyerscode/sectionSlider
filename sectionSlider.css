@@ -99,7 +99,7 @@
     padding: 4vw var(--sqs-mobile-site-gutter, 6vw);
   }
 }
-#sections > .wm-section-slider[data-header-transparent="false"]:first-child .navigation-wrapper {
+:is(#sections, #page-regions .region) > .wm-section-slider[data-header-transparent="false"]:first-child .navigation-wrapper {
   padding-top: calc(4vw + var(--header-height));
 }
 
@@ -162,15 +162,15 @@
 }
 
 /*If Swiper is first Section*/
-#sections > .wm-section-slider:first-child {
+:is(#sections, #page-regions .region) > .wm-section-slider:first-child {
   padding-top: 0px !important;
 }
-#sections > .wm-section-slider:first-child .page-section {
+:is(#sections, #page-regions .region) > .wm-section-slider:first-child .page-section {
   padding-top: var(--header-height) !important;
 }
 
 /*If Swiper is NOT first Section*/
-#sections > .wm-section-slider:not(:first-child) .swiper-slide > section.page-section {
+:is(#sections, #page-regions .region) > .wm-section-slider:not(:first-child) .swiper-slide > section.page-section {
   padding-top: 0px !important;
 }
 
