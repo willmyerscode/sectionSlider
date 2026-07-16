@@ -181,7 +181,7 @@ class WMSectionSlider {
     this.swiper.slideTo(randomIndex);
   }
   addFuncHeaderColorThemeMatch() {
-    const isFirstSection = this.el.matches("#sections > *:first-child");
+    const isFirstSection = this.el.matches(":is(#sections, #page-regions .region) > *:first-child");
     const isFixedHeader = window.Static?.SQUARESPACE_CONTEXT?.tweakJSON["tweak-fixed-header"] === "true";
     const isSolidHeader = document.getElementById("header")?.dataset.headerStyle === "solid";
 
@@ -736,3 +736,4 @@ class WMSectionSlider {
     });
   }
 })();
+
