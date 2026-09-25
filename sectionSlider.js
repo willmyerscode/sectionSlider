@@ -37,6 +37,7 @@ class WMSectionSlider {
     this.addFuncHeaderColorThemeMatch();
     this.addFuncSliderColorThemeMatch();
     this.addAutoplayToggle();
+    this.addNavigationFocusKeeper();
   }
   addResizeEventListener() {
     const handleResize = () => {
@@ -227,6 +228,30 @@ class WMSectionSlider {
     this.swiper.on('autoplayStop', () => updateToggleState(false));
     this.swiper.on('autoplayStart', () => updateToggleState(true));
   }
+  addNavigationFocusKeeper() {
+    const prev = this.el.querySelector('.navigation-button-prev button');
+    const next = this.el.querySelector('.navigation-button-next button');
+    if (!prev || !next) return;
+
+    // Arrow icons are decorative; the button's aria-label names the control.
+    this.el.querySelectorAll('.navigation-button-prev svg, .navigation-button-next svg')
+      .forEach(svg => svg.setAttribute('aria-hidden', 'true'));
+
+    // With loop/rewind off, Swiper disables the arrow at the first/last slide,
+    // which drops keyboard focus to <body>. Move it to the other arrow instead.
+    let focused = null;
+    [prev, next].forEach(btn => {
+      btn.addEventListener('focus', () => { focused = btn; });
+      btn.addEventListener('blur', () => { if (!btn.disabled) focused = null; });
+    });
+
+    this.swiper.on('toEdge', () => {
+      if (!focused?.disabled) return;
+      const other = focused === next ? prev : next;
+      focused = null;
+      if (!other.disabled) other.focus();
+    });
+  }
 
   initSwiper() {
     const data = this.initEl.dataset;
@@ -241,8 +266,10 @@ class WMSectionSlider {
     this.swiper = new Swiper(this.el, {
       speed: data.transitionSpeed || 400,
       navigation: {
-        nextEl: this.el.querySelector(".navigation-button-next"),
-        prevEl: this.el.querySelector(".navigation-button-prev"),
+        // Target the inner <button> so Swiper's a11y labels land on the
+        // real control instead of making the wrapper div a second button.
+        nextEl: this.el.querySelector(".navigation-button-next button"),
+        prevEl: this.el.querySelector(".navigation-button-prev button"),
       },
       loop: data.loop ? parseAttributeValue(data.loop) : true,
       rewind: parseAttributeValue(data.rewind) || false,
@@ -593,13 +620,13 @@ class WMSectionSlider {
           navigation && navigation !== "inline"
             ? `<div class="navigation-wrapper">
           <div class="navigation-button-prev">
-            <button>
+            <button type="button">
               <div class="swiper-button-background"></div>
               ${settings.prevIcon}
             </button>
           </div>
           <div class="navigation-button-next">
-            <button>
+            <button type="button">
               <div class="swiper-button-background"></div>
               ${settings.nextIcon}
             </button>
@@ -611,14 +638,14 @@ class WMSectionSlider {
           navigation === "inline" && pagination === "inline"
             ? `<div class="inline-navigation-wrapper">
           <div class="navigation-button-prev">
-            <button>
+            <button type="button">
               <div class="swiper-button-background"></div>
               ${settings.prevIcon}
             </button>
           </div>
           <div class="swiper-pagination"></div>
           <div class="navigation-button-next">
-            <button>
+            <button type="button">
               <div class="swiper-button-background"></div>
               ${settings.nextIcon}
             </button>
