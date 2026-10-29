@@ -559,6 +559,7 @@ class WMSectionSlider {
   function deconstruct() {
     document.querySelectorAll(".wm-section-slider").forEach(swiper => {
       swiper.swiper?.destroy();
+      unshuffleSlides(swiper.querySelector(".swiper-wrapper"));
       swiper.outerHTML = swiper.querySelector(".swiper-wrapper").innerHTML; // Restore original HTML
     });
     document.querySelectorAll(".swiper-slide").forEach(slide => {
@@ -691,7 +692,30 @@ class WMSectionSlider {
 
       nextSection = swiper.nextElementSibling; // Move to the next sibling
     }
+
+    if (Utilities.parseAttributeValue(el.dataset.shuffle) === true) {
+      shuffleSlides(swiperWrapper);
+    }
     return swiper;
+  }
+  function shuffleSlides(swiperWrapper) {
+    // Fisher-Yates on the slide order. Runs before Swiper initializes, so loop
+    // clones, pagination and slide indexes all follow the shuffled order.
+    const slides = Array.from(swiperWrapper.children);
+    // Remember the page order so deconstruct() can put it back for edit mode.
+    slides.forEach((slide, index) => (slide.dataset.originalIndex = index));
+    for (let i = slides.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [slides[i], slides[j]] = [slides[j], slides[i]];
+    }
+    slides.forEach(slide => swiperWrapper.appendChild(slide));
+  }
+  function unshuffleSlides(swiperWrapper) {
+    const slides = Array.from(swiperWrapper.querySelectorAll(":scope > [data-original-index]"));
+    if (!slides.length) return;
+    slides
+      .sort((a, b) => a.dataset.originalIndex - b.dataset.originalIndex)
+      .forEach(slide => swiperWrapper.appendChild(slide));
   }
 
   // Utility or helper functions
